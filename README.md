@@ -76,3 +76,8 @@ Adicione ao final do arquivo:
 2026-07-27 12:00:01 [INFO] Uso de Disco: 42% | Memoria RAM livre: 3420 MB - Sistema OK.
 2026-07-27 12:05:01 [ALERT] ALERTA: Uso de disco em 88%! Limite critico atingido.
 ```
+
+
+<img width="1015" height="198" alt="2" src="https://github.com/user-attachments/assets/4def4b23-eab1-4be2-a091-d8bbd56c0c41" />
+<img width="661" height="137" alt="3" src="https://github.com/user-attachments/assets/c16b8fce-8020-4c16-80c0-e6c895189fe4" />
+<img width="1434" height="277" alt="1" src="https://github.com/user-attachments/assets/4d4ee973-f3d5-47a1-9f6c-4ca5f2d8065a" />
