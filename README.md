@@ -73,8 +73,10 @@ Adicione ao final do arquivo:
 ## 📄 Exemplo de Log Gerado
 
 ```
-2026-07-27 12:00:01 [INFO] Uso de Disco: 42% | Memoria RAM livre: 3420 MB - Sistema OK.
-2026-07-27 12:05:01 [ALERT] ALERTA: Uso de disco em 88%! Limite critico atingido.
+[2026-07-28 18:43:02] [INFO] === Iniciando Verificação de Rotina ===
+[2026-07-28 18:43:02] [ALERT] Uso de disco elevado: 85% (Limite: 80%)
+[2026-07-28 18:43:02] [INFO] Uso atual de memória: 13%
+[2026-07-28 18:43:02] [INFO] === Verificação Concluída ===
 ```
 
 
