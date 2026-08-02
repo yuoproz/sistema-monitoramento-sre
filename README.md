@@ -1,38 +1,35 @@
 # 🖥️ Sistema de Monitoramento de Recursos & Alertas SRE
 
-Um script automatizado em Bash para monitoramento contínuo de recursos críticos do sistema (Uso de Disco e Memória RAM), com geração de logs estruturados e envio de alertas em tempo real via Webhook do Discord.
+Um projeto completo de observabilidade e monitoramento em **Shell Script**, containerizado com **Docker** e orquestrado via **Docker Compose**, focado em práticas de **SRE, DevOps e DevSecOps**.
 
----
-
-## 🚀 Funcionalidades
-
-- **Monitoramento Automático:** Coleta métricas de uso de disco (`df`) e memória RAM (`free`).
-- **Sistema de Logging:** Registra todas as checagens com data, hora e severidade (`[INFO]` e `[ALERT]`) em arquivo local.
-- **Alertas em Tempo Real:** Dispara notificações dinâmicas via **Discord Webhook** quando os limites críticos são ultrapassados.
-- **Automação via Cron:** Agendamento para execução contínua em segundo plano no Linux.
+A aplicação realiza a coleta contínua de recursos críticos do sistema (Disco e Memória RAM), gerando logs estruturados e disparando alertas em tempo real via **Discord Webhook**.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Linux / WSL**
-- **Bash Scripting** (`df`, `free`, `awk`, `curl`)
-- **Discord Webhooks**
-- **Cron** (Agendador de Tarefas)
-- **Git & GitHub**
+- **Linux / WSL** & **Bash Scripting** (`df`, `free`, `awk`, `curl`)
+- **Docker & Alpine Linux:** Imagem otimizada e *hardening* de segurança (execução com usuário não-root `appuser`).
+- **Docker Compose:** Orquestração de containers, mapeamento de volumes e injeção de variáveis de ambiente.
+- **DevSecOps & `.env`:** Gestão segura de segredos sem exposição de credenciais no repositório.
+- **Discord Webhooks:** Notificações dinâmicas de alertas em tempo real.
+- **Git & GitHub:** Versionamento e controle de qualidade de código.
 
 ---
 
-## 📌 Pré-requisitos
+## 🚀 Funcionalidades
 
-```bash
-sudo apt update
-sudo apt install curl cron -y
-```
+- [x] **Coleta Automática:** Métricas de uso de disco e memória RAM.
+- [x] **Logging Estruturado:** Registra todas as checagens com data, hora e severidade (`[INFO]` e `[ALERT]`).
+- [x] **Alertas em Tempo Real:** Dispara notificações via Discord Webhook caso os limites críticos sejam ultrapassados.
+- [x] **Persistência de Logs:** Mapeamento de volumes Docker (`./monitoramento.log`) para guardar os registros na máquina host.
+- [x] **Isolamento e Segurança:** Container executado com usuário sem privilégios (`appuser`).
 
 ---
 
-## ⚙️ Configuração e Execução
+## ⚙️ Como Executar o Projeto
+
+### Opção 1: Via Docker Compose (Recomendado) 🐳
 
 **1. Clonar o repositório**
 ```bash
@@ -40,25 +37,35 @@ git clone https://github.com/yuoproz/sistema-monitoramento-sre.git
 cd sistema-monitoramento-sre
 ```
 
-**2. Configurar o Webhook do Discord**
+**2. Configurar as Variáveis de Ambiente**
+
+Crie um arquivo `.env` na raiz do projeto:
 ```bash
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/SUA_URL_AQUI"
 ```
 
-**3. Dar permissão de execução**
+**3. Executar a aplicação**
 ```bash
-chmod +x monitoramento_final.sh
-```
-
-**4. Executar manualmente**
-```bash
-./monitoramento_final.sh
+docker compose up --build
 ```
 
 ---
 
-## ⏰ Agendamento com Crontab
+### Opção 2: Execução Direta via Terminal / Cron 🐧
 
+**1. Pré-requisitos**
+```bash
+sudo apt update
+sudo apt install curl cron -y
+```
+
+**2. Dar permissão e executar manualmente**
+```bash
+chmod +x monitoramento_final.sh
+./monitoramento_final.sh
+```
+
+**3. Agendamento com Crontab (Opcional)**
 ```bash
 crontab -e
 ```
@@ -73,13 +80,12 @@ Adicione ao final do arquivo:
 ## 📄 Exemplo de Log Gerado
 
 ```
-[2026-07-28 18:43:02] [INFO] === Iniciando Verificação de Rotina ===
-[2026-07-28 18:43:02] [ALERT] Uso de disco elevado: 85% (Limite: 80%)
-[2026-07-28 18:43:02] [INFO] Uso atual de memória: 13%
-[2026-07-28 18:43:02] [INFO] === Verificação Concluída ===
+[2026-08-02 17:57:52] [INFO] === Iniciando Verificação de Rotina ===
+[2026-08-02 17:57:52] [INFO] Uso de disco normal: 0%
+[2026-08-02 17:57:52] [INFO] Uso atual de memória: 48%
+[2026-08-02 17:57:52] [INFO] === Verificação Concluída ===
 ```
 
+---
 
-<img width="1015" height="198" alt="2" src="https://github.com/user-attachments/assets/4def4b23-eab1-4be2-a091-d8bbd56c0c41" />
-<img width="661" height="137" alt="3" src="https://github.com/user-attachments/assets/c16b8fce-8020-4c16-80c0-e6c895189fe4" />
-<img width="1434" height="277" alt="1" src="https://github.com/user-attachments/assets/4d4ee973-f3d5-47a1-9f6c-4ca5f2d8065a" />
+## 📸 Evidências de Funcionamento
