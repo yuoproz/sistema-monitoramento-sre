@@ -6,28 +6,28 @@
 # ==========================================
 
 #definição do webhook do Discord para alertas
-DISCORD_WEBHOOK_URL="https:/discord.com/api/webhooks/1530721635458482246/nBnNrfITM6sSvmUt6JU8DKbrbHBqzgszJntyTarbTpRgIXBU94_vDJij3iBu4aDgEy4W"
-
+# DISCORD_WEBHOOK_URL="definida via arquivo .env"
 # Parâmetros de Alerta (Limites em %)
-CPU_LIMIT=80
-DISK_LIMIT=0
+
+DISK_LIMIT=80
 LOG_FILE="monitoramento.log"
 send_discord_alert() {
     local MESSAGE=$1
-    curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"🚨 **ALERTA DE MONITORAMENTO SRE:** $MESSAGE\"}" "$DISCORD_WEBHOOK_URL"
+    curl -s -H "Content-Type: application/json" -X POST -d "{\"content\": \"🚨 **ALERTA DE MONITORAMENTO SRE:** $MESSAGE\"}" "$DISCORD_WEBHOOK_URL"
 }
 # Função para registrar logs formatados
 log_message() {
     local LEVEL=$1
     local MESSAGE=$2
-    local TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+   local TIMESTAMP
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
     echo "[$TIMESTAMP] [$LEVEL] $MESSAGE" | tee -a "$LOG_FILE"
 }
 
 # 1. Checagem de Disco
 check_disk() {
-    local DISK_USAGE=$(df / | grep / | awk '{ print $5 }' | sed 's/%//')
-
+    local DISK_USAGE
+DISK_USAGE=$(df / | grep / | awk '{ print $5 }' | sed 's/%//')
     if [ "$DISK_USAGE" -ge "$DISK_LIMIT" ]; then
         local MSG="Uso de disco elevado: ${DISK_USAGE}% (Limite: ${DISK_LIMIT}%)"
         log_message "ALERT" "$MSG"
@@ -40,7 +40,9 @@ check_disk() {
 # 2. Checagem de Memória
 check_memory() {
     # Calcula porcentagem de memória usada usando 'free'
-    local MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+    local MEM_USAGE
+
+MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
 
     log_message "INFO" "Uso atual de memória: ${MEM_USAGE}%"
 }

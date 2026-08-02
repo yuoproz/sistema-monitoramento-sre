@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app-monitoramento:
+    build: .
+    container_name: container-monitoramento
+    env_file:
+      - .env
+    volumes:
+      - ./monitoramento.log:/app/monitoramento.log
