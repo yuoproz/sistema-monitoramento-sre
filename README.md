@@ -89,3 +89,6 @@ Adicione ao final do arquivo:
 ---
 
 ## 📸 Evidências de Funcionamento
+
+<img width="844" height="220" alt="2" src="https://github.com/user-attachments/assets/90257292-74cf-4ffe-860d-65c51a8ca987" />
+<img width="892" height="248" alt="1" src="https://github.com/user-attachments/assets/8f8b938a-5b9f-4e7d-8d7c-13ef06252e71" />
