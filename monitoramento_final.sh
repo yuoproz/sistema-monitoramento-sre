@@ -1,54 +1,85 @@
+```bash
 #!/bin/bash
 
-# ==========================================
-# Script de Monitoramento de Sistema
-# Projeto 1 - Portfólio DevOps/SRE
-# ==========================================
-
-#definição do webhook do Discord para alertas
-# DISCORD_WEBHOOK_URL="definida via arquivo .env"
-# Parâmetros de Alerta (Limites em %)
+set -Eeuo pipefail
 
 DISK_LIMIT=80
+MEMORY_LIMIT=80
+CPU_LIMIT=80
 LOG_FILE="monitoramento.log"
-send_discord_alert() {
-    local MESSAGE=$1
-    curl -s -H "Content-Type: application/json" -X POST -d "{\"content\": \"🚨 **ALERTA DE MONITORAMENTO SRE:** $MESSAGE\"}" "$DISCORD_WEBHOOK_URL"
-}
-# Função para registrar logs formatados
+
+if [ -f ".env" ]; then
+    source .env
+fi
+
 log_message() {
-    local LEVEL=$1
-    local MESSAGE=$2
-   local TIMESTAMP
-TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-    echo "[$TIMESTAMP] [$LEVEL] $MESSAGE" | tee -a "$LOG_FILE"
+    local level="$1"
+    local message="$2"
+    local timestamp
+
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
 }
 
-# 1. Checagem de Disco
+send_discord_alert() {
+    local message="$1"
+
+    [ -z "${DISCORD_WEBHOOK_URL:-}" ] && return 0
+
+    curl -fsS \
+        -H "Content-Type: application/json" \
+        -X POST \
+        -d "{\"content\":\"🚨 **ALERTA SRE:** $message\"}" \
+        "$DISCORD_WEBHOOK_URL" >/dev/null
+}
+
 check_disk() {
-    local DISK_USAGE
-DISK_USAGE=$(df / | grep / | awk '{ print $5 }' | sed 's/%//')
-    if [ "$DISK_USAGE" -ge "$DISK_LIMIT" ]; then
-        local MSG="Uso de disco elevado: ${DISK_USAGE}% (Limite: ${DISK_LIMIT}%)"
-        log_message "ALERT" "$MSG"
-        send_discord_alert "$MSG"  # <-- ESSA LINHA É A CHAVE!
+    local usage
+
+    usage=$(df / | awk 'NR==2 {gsub("%",""); print $5}')
+
+    if [ "$usage" -ge "$DISK_LIMIT" ]; then
+        local message="Uso de disco elevado: ${usage}% (limite: ${DISK_LIMIT}%)"
+        log_message "ALERT" "$message"
+        send_discord_alert "$message"
     else
-        log_message "INFO" "Uso de disco normal: ${DISK_USAGE}%"
+        log_message "INFO" "Uso de disco: ${usage}%"
     fi
 }
 
-# 2. Checagem de Memória
 check_memory() {
-    # Calcula porcentagem de memória usada usando 'free'
-    local MEM_USAGE
+    local usage
 
-MEM_USAGE=$(free | grep Mem | awk '{print $3/$2 * 100.0}' | cut -d. -f1)
+    usage=$(free | awk '/Mem:/ {printf "%.0f", ($3/$2) * 100}')
 
-    log_message "INFO" "Uso atual de memória: ${MEM_USAGE}%"
+    if [ "$usage" -ge "$MEMORY_LIMIT" ]; then
+        local message="Uso de memória elevado: ${usage}% (limite: ${MEMORY_LIMIT}%)"
+        log_message "ALERT" "$message"
+        send_discord_alert "$message"
+    else
+        log_message "INFO" "Uso de memória: ${usage}%"
+    fi
 }
 
-# --- Execução Principal ---
-log_message "INFO" "=== Iniciando Verificação de Rotina ==="
+check_cpu() {
+    local usage
+
+    usage=$(top -bn1 | awk '/Cpu\(s\)/ {printf "%.0f", 100 - $8}')
+
+    if [ "$usage" -ge "$CPU_LIMIT" ]; then
+        local message="Uso de CPU elevado: ${usage}% (limite: ${CPU_LIMIT}%)"
+        log_message "ALERT" "$message"
+        send_discord_alert "$message"
+    else
+        log_message "INFO" "Uso de CPU: ${usage}%"
+    fi
+}
+
+log_message "INFO" "Iniciando monitoramento"
+
 check_disk
 check_memory
-log_message "INFO" "=== Verificação Concluída ===" 
+check_cpu
+
+log_message "INFO" "Monitoramento concluído"
+```
